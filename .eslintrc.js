@@ -15,6 +15,5 @@ module.exports = {
     'no-param-reassign': 0,
     'no-unused-vars': ['error', { args: 'none' }],
     'consistent-return': 0,
-    'comma-dangle': 0,
   },
 };
