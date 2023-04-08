@@ -6,9 +6,7 @@ const Person = require('./models/person');
 
 const app = express();
 
-morgan.token('body', (req, res) => {
-  return JSON.stringify(req.body);
-});
+morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
@@ -17,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('build'));
 
-let persons = [
+const persons = [
   {
     id: 1,
     name: 'Arto Hellas',
@@ -41,8 +39,8 @@ let persons = [
 ];
 
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then((persons) => {
-    response.json(persons);
+  Person.find({}).then((people) => {
+    response.json(people);
   });
 });
 
@@ -60,13 +58,13 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
+  const personFound = persons.find((person) => person.id === id);
 
-  if (person) {
-    return response.json(person);
+  if (personFound) {
+    return response.json(personFound);
   }
 
-  response.status(404).end();
+  return response.status(404).end();
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -78,7 +76,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 });
 
 app.post('/api/persons', (request, response, next) => {
-  const body = request.body;
+  const { body } = request;
 
   if (!body.name) {
     return response.status(400).json({
@@ -95,29 +93,26 @@ app.post('/api/persons', (request, response, next) => {
     .then((matchedPerson) => {
       if (matchedPerson.length > 0) {
         // Person exists
-        response.status(400).json({
+        return response.status(400).json({
           error: 'name already exists',
         });
-      } else {
-        // Person doesn't exist
-        const person = new Person({
-          name: body.name,
-          number: body.number,
-        });
-
-        person
-          .save()
-          .then((savedPerson) => {
-            response.json(savedPerson);
-          })
-          .catch((error) => next(error));
       }
+      // Person doesn't exist
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+      });
+
+      person
+        .save()
+        .then((savedPerson) => response.json(savedPerson))
+        .catch((error) => next(error));
     })
     .catch((error) => next(error));
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const body = request.body;
+  const { body } = request;
 
   if (!body.name) {
     return response.status(400).json({
@@ -138,10 +133,10 @@ app.put('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndUpdate(request.params.id, newData, { new: true })
     .then((savedPerson) => {
       if (!savedPerson) {
-        response.status(404).end();
+        return response.status(404).end();
       }
 
-      response.json(savedPerson);
+      return response.json(savedPerson);
     })
     .catch((error) => next(error));
 });

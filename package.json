@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd ../fullstackopen/part2/phonebook/ && npm run build && cp -r build ../../../fso-part3/",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "author": "Yuta Yokomizo",
   "license": "ISC",
@@ -22,6 +23,9 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.38.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.22"
   }
 }

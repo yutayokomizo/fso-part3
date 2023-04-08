@@ -8,7 +8,7 @@ console.log(`Connecting to ${url}`);
 
 mongoose
   .connect(url)
-  .then((result) => {
+  .then(() => {
     console.log('Connected to MongoDB');
   })
   .catch((err) => {
@@ -29,9 +29,9 @@ const personSchema = new mongoose.Schema({
       validator: (v) => {
         if (v.includes('-')) {
           return /^\d{2,3}-\d{1,}$/.test(v);
-        } else {
-          return true;
         }
+
+        return true;
       },
       message: (props) => `${props.value} is not a valid number`,
     },
